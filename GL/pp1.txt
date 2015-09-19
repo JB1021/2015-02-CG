@@ -1,0 +1,200 @@
+#include <windows.h>
+#include <gl\glut.h>
+#include <math.h>
+
+
+#define GL_PI 3.1415f
+static GLfloat xRot = 0.0f;
+static GLfloat yRot = 0.0f;
+
+
+GLsizei rsize = 50.0f;
+
+GLfloat xstep = 1.0f;
+GLfloat ystep = 1.0f;
+
+GLfloat window_width;
+GLfloat window_height;
+
+
+void RenderScene() { 
+	static GLfloat fElect1=0.0f;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -100.0f);
+	glColor3ub(255, 0, 0);
+	glutSolidSphere(10.0f, 15, 15);
+	glPushMatrix();
+	glRotatef(fElect1, 0.0f, 1.0f, 0.0f);
+	glTranslatef(90.0f, 0.0f, 0.0f);
+	glColor3ub(255, 255, 0);
+	glutSolidSphere(6.0f, 15, 15);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(45.0f, 0.0f, 0.0f, 1.0f);
+	glRotatef(fElect1, 0.0f, 1.0f, 0.0f);
+	glTranslatef(-70.0f, 0.0f, 0.0f);
+	glutSolidSphere(6.0f, 15, 15);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+	glRotatef(fElect1, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.0f, 0.0f, 60.0f);
+	glutSolidSphere(6.0f, 15, 15);
+	glPopMatrix();
+	fElect1 += 10.0f;
+
+	if (fElect1 > 360.0f)
+	fElect1 = 0.0f;
+	
+	glutSwapBuffers();
+}
+void ChangeSize(int w, int h)
+{
+
+	GLfloat fAspect;
+	glViewport(0, 0, w, h);
+	fAspect = (GLfloat)w / (GLfloat)h;
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(60.0f, fAspect, 1.0f, 500.0f);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+void TimerFunc(int value)
+{
+	glutPostRedisplay();
+	glutTimerFunc(100, TimerFunc, 1);
+}
+
+void SetupRC(void)
+{
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);  //add
+	glFrontFace(GL_CCW);      //add
+	glEnable(GL_CULL_FACE);
+}
+
+void main(void)
+{
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(512, 512);
+	glutInitWindowPosition(0, 0);
+	glutCreateWindow("Atom");
+	glutReshapeFunc(ChangeSize);
+	glutTimerFunc(33, TimerFunc, 1);
+	//add
+	glutDisplayFunc(RenderScene);
+	SetupRC();
+	glutMainLoop();
+}
+
+#include <windows.h>
+#include <gl\glut.h>
+
+GLfloat x1 = 0.0f;
+GLfloat y1 = 0.0f;
+GLfloat x2 = -20.0f;
+GLfloat y2 = -20.0f;
+GLfloat x3 = -30.0f;
+GLfloat y3 = 30.0f;
+GLfloat x4 = -40.0f;
+GLfloat y4 = -50.0f;
+GLsizei rsize = 50.0f;
+
+GLfloat x1step = 1.0f;
+GLfloat y1step = 1.0f;
+GLfloat x2step = 2.0f;
+GLfloat y2step = 3.0f;
+GLfloat x3step = 1.0f;
+GLfloat y3step = 2.0f;
+GLfloat x4step = 2.0f;
+GLfloat y4step = 1.0f;
+GLfloat window_width;
+GLfloat window_height;
+
+void RenderScene(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glRectf(x1, y1, x1 + rsize, y1 + rsize);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glRectf(x2, y2,x2+rsize,y2+rsize);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glRectf(x3, y3, x3 + rsize, y3 + rsize);
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glRectf(x4, y4, x4 + rsize, y4 + rsize);
+	glutSwapBuffers();
+}
+
+void moveRect(GLfloat* xstep, GLfloat* ystep, GLfloat* x, GLfloat* y) {
+	
+	if (*x> window_width - rsize || *x < -window_width)  // вп?б╛?
+		*xstep = -*xstep;
+
+	if (*y>window_height - rsize || *y < -window_height) // вп?б╛?
+		*ystep = -*ystep;
+
+	if (*x > window_width - rsize)
+		*x = window_width - rsize - 1;
+
+	if (*y >window_height - rsize)
+		*y = window_height - rsize - 1;
+
+	*x += *xstep;
+	*y += *ystep;
+}
+
+
+void TimerFunction2(int value)
+{
+	moveRect(&x1step, &y1step, &x1, &y1);
+	moveRect(&x2step, &y2step, &x2, &y2);
+	moveRect(&x3step, &y3step, &x3, &y3);
+	moveRect(&x4step, &y4step, &x4, &y4);
+	glutPostRedisplay();
+	glutTimerFunc(33, TimerFunction2, 1);
+}
+
+void SetupRC(void)
+{
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void ChangeSize(GLsizei w, GLsizei h)
+{
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (w <= h)
+	{
+		window_width = 100.0f;
+		window_height = 100.0f*h / w; 
+		glOrtho(-100.0f, 100.0f, -window_height, window_height, 1.0, -1.0);
+	}
+	else
+	{
+		window_width = 100.0f*w / h; 
+		window_height = 100.0f;
+		glOrtho(-window_width, window_width, -100.0f, 100.0f, 1.0, -1.0);
+	}
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+void main(void)
+{
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(800, 600);
+	glutCreateWindow("Practical Problem 1");
+	glutDisplayFunc(RenderScene);
+	glutReshapeFunc(ChangeSize);
+	glutTimerFunc(2000, TimerFunction2, 1);
+	SetupRC();
+	glutMainLoop();
+
+}

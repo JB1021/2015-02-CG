@@ -3,6 +3,7 @@
 #include <stdlib.h> 
 #include <stdio.h>
 #include <vector>
+
 #include "Ball.h"
 
 
@@ -63,7 +64,7 @@ void mouse(int btn, int state, int x, int y)
 	if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
 		Ball* ball = new Ball();
-		ball->Init(x, y);
+		ball->Init(x, y, 1);
 		balls.push_back(ball);
 	}
 	if (btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
@@ -72,10 +73,56 @@ void mouse(int btn, int state, int x, int y)
 	}
 }
 
+boolean isCollision(Ball* ball, Ball* otherBall) {
+	float x = ball->x;
+	float y = ball->y;
+	float z = ball->z;
+	float oX = otherBall->x;
+	float oY = otherBall->y;
+	float oZ = otherBall->z;
+	float distance = sqrt(pow(x - oX, 2) + pow(y - oY, 2)+ pow(z - oZ, 2));
+
+	if (distance > ball->radius * 2) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
 void Update(float dt)
 {
 	int tempI = -1;
+	int checkTotal = 25;
+	static int check = 0;
+	check++;
+	if (check > checkTotal) {
+		check = 0;
+		for (int i = 0; i < balls.size(); i++) {
+			for (int j = i + 1; j < balls.size(); j++) {
+				if (isCollision(balls[i], balls[j])) {
 
+					balls[i]->xSpeed = -balls[i]->xSpeed;
+					balls[i]->ySpeed = -balls[i]->ySpeed;
+					balls[i]->zSpeed = -balls[i]->zSpeed;
+					balls[i]->x += balls[i]->xSpeed * 0.35;
+					balls[i]->y += balls[i]->ySpeed * 0.35;
+					balls[i]->z += balls[i]->zSpeed * 0.35;
+
+					if (balls[i]->xSpeed * balls[j]->xSpeed < 0) {
+						balls[j]->xSpeed = -balls[j]->xSpeed;
+					}
+					if (balls[i]->ySpeed * balls[j]->ySpeed < 0) {
+						balls[j]->ySpeed = -balls[j]->ySpeed;
+					}
+					if (balls[i]->zSpeed * balls[j]->zSpeed < 0) {
+						balls[j]->zSpeed = -balls[j]->zSpeed;
+					}
+
+				}
+			}
+		}
+	}
 	int i = 0;
 	for (auto& ball : balls)
 	{
@@ -92,7 +139,10 @@ void Update(float dt)
 		delete balls[tempI];
 		balls.erase(balls.begin() + tempI);
 	}
+
+
 }
+
 
 void Render()
 {
@@ -106,6 +156,7 @@ void Render()
 
 void MainLoop()
 {
+
 	static int prevTime = GetTickCount();
 	int curTime = GetTickCount();
 
