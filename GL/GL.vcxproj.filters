@@ -51,7 +51,16 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Text.txt">
+    <Text Include="pp2.txt">
+      <Filter>Practical Problems</Filter>
+    </Text>
+    <Text Include="pp3.txt">
+      <Filter>Practical Problems</Filter>
+    </Text>
+    <Text Include="pp4.txt">
+      <Filter>Practical Problems</Filter>
+    </Text>
+    <Text Include="pp1.txt">
       <Filter>Practical Problems</Filter>
     </Text>
   </ItemGroup>
